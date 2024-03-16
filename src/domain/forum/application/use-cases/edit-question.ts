@@ -1,3 +1,4 @@
+import { Question } from '../../enterprise/entities/question';
 import { QuestionsRepository } from '../repositories/questions-repository';
 
 interface EditQuestionUseCaseRequest {
@@ -5,6 +6,10 @@ interface EditQuestionUseCaseRequest {
   title: string;
   content: string;
   questionId: string;
+}
+
+interface EditQuestionUseCaseResponse {
+  question: Question;
 }
 
 export class EditQuestionUseCase {
@@ -15,7 +20,7 @@ export class EditQuestionUseCase {
     title,
     content,
     questionId,
-  }: EditQuestionUseCaseRequest): Promise<void> {
+  }: EditQuestionUseCaseRequest): Promise<EditQuestionUseCaseResponse> {
     const question = await this.questionsRepository.findById(questionId);
 
     if (!question) {
@@ -30,5 +35,9 @@ export class EditQuestionUseCase {
     question.content = content;
 
     this.questionsRepository.save(question);
+
+    return {
+      question,
+    };
   }
 }
