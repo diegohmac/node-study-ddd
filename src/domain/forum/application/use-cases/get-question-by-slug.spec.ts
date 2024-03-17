@@ -1,6 +1,7 @@
 import { InMemoryQuestionsRepository } from '@/tests/repositories/in-memory-questions-repository';
 import { GetQuestionBySlugUseCase } from './get-question-by-slug';
 import { makeQuestion } from '@/tests/factories/make-question';
+import { Slug } from '../../enterprise/entities/value-objects/slug';
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository;
 let sut: GetQuestionBySlugUseCase; // sut: system under test
@@ -12,15 +13,20 @@ describe('Get Question By Slug', () => {
   });
 
   it('should be able to get a question by slug', async () => {
-    const newQuestion = makeQuestion();
+    const newQuestion = makeQuestion({
+      slug: Slug.create('new-title'),
+    });
 
     await inMemoryQuestionsRepository.create(newQuestion);
 
-    const { question } = await sut.execute({
+    const result = await sut.execute({
       slug: 'new-title',
     });
 
-    expect(question.id).toBeTruthy();
-    expect(question.title).toEqual(newQuestion.title);
+    expect(result.isRight()).toBe(true);
+    if (result.isRight()) {
+      expect(result.value?.question.id).toBeTruthy();
+      expect(result.value?.question.title).toEqual(newQuestion.title);
+    }
   });
 });
