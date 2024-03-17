@@ -6,7 +6,23 @@ export class InMemoryQuestionCommentsRepository
 {
   public items: QuestionComment[] = [];
 
+  async findById(id: string) {
+    return (
+      this.items.find(
+        (questionComment) => questionComment.id.toString() === id
+      ) || null
+    );
+  }
+
   async create(questionComment: QuestionComment) {
     this.items.push(questionComment);
+  }
+
+  async delete(questionComment: QuestionComment) {
+    const index = this.items.findIndex(
+      (item) => item.id === questionComment.id
+    );
+
+    this.items.splice(index, 1);
   }
 }
